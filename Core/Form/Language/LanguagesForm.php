@@ -29,7 +29,9 @@ use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 class LanguagesForm extends BaseBlockType
 {
     /**
-     * {@inheritdoc}
+     * Builds the form
+     *
+     * @see FormTypeExtensionInterface::buildForm()
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
@@ -40,24 +42,28 @@ class LanguagesForm extends BaseBlockType
             'label' => 'languages_controller_is_main_language',
             'attr' => array(
                 'title' => 'languages_controller_is_main_language_explanation',
-            ),      
+            ),
         ));
     }
 
     /**
-     * {@inheritdoc}
+     * Sets the default options for this type
+     *
+     * @param OptionsResolverInterface $resolver The resolver for the options
      */
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         parent::setDefaultOptions($resolver);
-        
+
         $resolver->setDefaults(array(
             'data_class' => 'RedKiteLabs\RedKiteCmsBundle\Core\Form\Language\Language',
         ));
     }
 
     /**
-     * {@inheritdoc}
+     * Returns the name of this type
+     *
+     * @return string The name of this type
      */
     public function getName()
     {

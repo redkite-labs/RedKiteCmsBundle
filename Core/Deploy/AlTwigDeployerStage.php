@@ -37,7 +37,7 @@ class AlTwigDeployerStage extends AlTwigDeployer
      *
      * @param \Symfony\Component\DependencyInjection\ContainerInterface $container
      */
-    public function  __construct(ContainerInterface $container)
+    public function __construct(ContainerInterface $container)
     {
         parent::__construct($container);
 
@@ -62,7 +62,7 @@ class AlTwigDeployerStage extends AlTwigDeployer
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     protected function save(AlPageTree $pageTree, $type)
     {

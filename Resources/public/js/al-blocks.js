@@ -52,7 +52,9 @@
                            'slotName' : $(this).attr('data-slot-name'),
                            'contentType': contentType,
                            'included': included,
-                           'options': options},
+                           'options': options,
+                           'insertDirection': $('body').data('insertDirection')
+                    },
                     beforeSend: function()
                     {
                         $('body').AddAjaxLoader();
@@ -115,12 +117,14 @@
                     {
                         updateContentsJSon(response);
                         Holder.run();
+                        
+                        var editedBlock = $('body').data('editedBlock');
                         if (successCallback != null) {
-                            successCallback(activeBlock);
+                            successCallback(editedBlock);
                         }
                         
-                        if (activeBlock != null) {
-                            $(document).trigger("blockEdited", [ activeBlock ]);                      
+                        if (editedBlock != null) {
+                            $(document).trigger("blockEdited", [ editedBlock ]);                      
                         }
                     },
                     error: function(err)
@@ -177,9 +181,9 @@
                     },
                     success: function(response)
                     {
+                        $(document).trigger("blockDeleted", [ $('body').data('activeBlock') ]);
+                        
                         updateContentsJSon(response);
-
-                        $(document).trigger("blockDeleted", []);
                     },
                     error: function(err)
                     {
@@ -255,7 +259,11 @@ function updateContentsJSon(response, editorWidth)
                 }
                 else
                 {
-                    $(item.value).insertAfter('[data-name="' + item.insertAfter + '"]');
+                    if ($('body').data('insertDirection') == 'top') {                        
+                        $('[data-name="' + item.insertAfter + '"]').parent().before(item.value);
+                    } else {                        
+                        $('[data-name="' + item.insertAfter + '"]').parent().after(item.value);
+                    }
                 }
                 
                 $('[data-name="' + item.blockId + '"]').blocksEditor('start');
@@ -266,11 +274,14 @@ function updateContentsJSon(response, editorWidth)
                 $(blockName)
                     .blocksEditor('stopEditElement')
                     .replaceWith(item.value);
-                    
+                
+                // Here we need to retrieve the block again because it has just been replaced
                 $(blockName)
                     .blocksEditor('startEditElement')
                     .blocksEditor('hideElementContent')
-                ;      
+                ;     
+                
+                $('body').data('editedBlock', $(blockName));
                 
                 break;
             case "remove-block":

@@ -43,9 +43,10 @@ class AlActiveTheme implements AlActiveThemeInterface
         if (null !== $this->activeTheme) {
             return $this->activeTheme;
         }
-        
-        if ( ! file_exists($this->getActiveThemeFile()))
-        {
+
+        $activeThemeFile = $this->getActiveThemeFile();
+
+        if ( ! file_exists($activeThemeFile)) {
             $themes = $this->container->get('red_kite_labs_theme_engine.themes');
             foreach ($themes as $theme) break;
 
@@ -54,8 +55,8 @@ class AlActiveTheme implements AlActiveThemeInterface
 
             return $this->activeTheme;
         }
-        
-        $this->activeTheme = trim(file_get_contents($this->getActiveThemeFile()));
+
+        $this->activeTheme = trim(file_get_contents($activeThemeFile));
 
         return $this->activeTheme;
     }
@@ -67,29 +68,28 @@ class AlActiveTheme implements AlActiveThemeInterface
     {
         file_put_contents($this->getActiveThemeFile(), trim($themeName));
     }
-    
+
     public function getThemeBootstrapVersion($themeName = null)
     {
         if (null === $themeName) {
             if (null !== $this->bootstrapVersion) {
                 return $this->bootstrapVersion;
             }
-            
+
             $themeName = $this->getActiveTheme();
         }
-        
+
         $this->bootstrapVersion = $this->container->getParameter('red_kite_cms.bootstrap_version');
-        
-        if ( ! $this->container->hasParameter('red_kite_cms.bootstrap_themes')){
+
+        if ( ! $this->container->hasParameter('red_kite_labs_theme_engine.bootstrap_themes')) {
             return $this->bootstrapVersion;
         }
-        
-        $themes = $this->container->getParameter('red_kite_cms.bootstrap_themes'); 
+
+        $themes = $this->container->getParameter('red_kite_labs_theme_engine.bootstrap_themes');
         if (array_key_exists($themeName, $themes)) {
-            
             $this->bootstrapVersion = $themes[$themeName];
         }
-        
+
         return $this->bootstrapVersion;
     }
 

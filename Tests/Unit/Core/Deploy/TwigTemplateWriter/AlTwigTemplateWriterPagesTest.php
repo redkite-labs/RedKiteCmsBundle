@@ -232,7 +232,7 @@ class AlTwigTemplateWriterPagesPagesTest extends BaseAlTwigTemplateWriter
         $section = "\n{#--------------  ASSETS SECTION  --------------#}" . PHP_EOL;
         $section .= "{% block internal_header_javascripts %}" . PHP_EOL;
         $section .= "{{ parent() }}" . PHP_EOL;
-        $section .= "<script>$(document).ready(function(){some js code});</script>" . PHP_EOL;
+        $section .= "<script>$(document).ready(function () {some js code});</script>" . PHP_EOL;
         $section .= "{% endblock %}\n" . PHP_EOL;
 
         $this->assertEquals($section, $twigTemplateWriter->getAssetsSection());
@@ -262,7 +262,7 @@ class AlTwigTemplateWriterPagesPagesTest extends BaseAlTwigTemplateWriter
         $section = "\n{#--------------  ASSETS SECTION  --------------#}" . PHP_EOL;
         $section .= "{% block internal_header_javascripts %}" . PHP_EOL;
         $section .= "{{ parent() }}" . PHP_EOL;
-        $section .= "<script>$(document).ready(function(){" . $expectedJsCode . "});</script>" . PHP_EOL;
+        $section .= "<script>$(document).ready(function () {" . $expectedJsCode . "});</script>" . PHP_EOL;
         $section .= "{% endblock %}\n" . PHP_EOL;
         
         $this->assertEquals($section, $twigTemplateWriter->getAssetsSection());
@@ -297,7 +297,7 @@ class AlTwigTemplateWriterPagesPagesTest extends BaseAlTwigTemplateWriter
         $section .= "{% endblock %}\n" . PHP_EOL;
         $section .= "{% block internal_header_javascripts %}" . PHP_EOL;
         $section .= "{{ parent() }}" . PHP_EOL;
-        $section .= "<script>$(document).ready(function(){some js code});</script>" . PHP_EOL;
+        $section .= "<script>$(document).ready(function () {some js code});</script>" . PHP_EOL;
         $section .= "{% endblock %}\n" . PHP_EOL;
 
         $this->assertEquals($section, $twigTemplateWriter->getAssetsSection());
@@ -486,11 +486,11 @@ class AlTwigTemplateWriterPagesPagesTest extends BaseAlTwigTemplateWriter
         $this->setUpTemplateSlots($slots);
         $this->urlManager->expects($this->any())
             ->method('getProductionRoute')
-            ->will($this->returnValue('_en_index'));
+            ->will($this->returnValue("_en_index"));
 
         $this->setUpMetatagsAndAssets("A title", "A description", "some,keywords", array('style1.css', 'style2.css'), array('javascript1.js', 'javascript2.js'), 'some css code', 'some js code');
         $this->setUpPageBlocks();
-        $this->setUpBlockManagerFactory('<ul><li><a href="route:_en_index">Fancy page</a></li></ul>', 1);
+        $this->setUpBlockManagerFactory('<ul><li><a href="route:&#039;_en_index&#039;">Fancy page</a></li></ul>', 1);
 
         $section = "\n{#--------------  CONTENTS SECTION  --------------#}" . PHP_EOL;
         $section .= "{% block logo %}" . PHP_EOL;
@@ -678,7 +678,7 @@ class AlTwigTemplateWriterPagesPagesTest extends BaseAlTwigTemplateWriter
         $section .= "{% endblock %}\n" . PHP_EOL;
         $section .= "{% block internal_header_javascripts %}" . PHP_EOL;
         $section .= "{{ parent() }}" . PHP_EOL;
-        $section .= "<script>$(document).ready(function(){some js code});</script>" . PHP_EOL;
+        $section .= "<script>$(document).ready(function () {some js code});</script>" . PHP_EOL;
         $section .= "{% endblock %}\n" . PHP_EOL;
         $section .= "\n{#--------------  CONTENTS SECTION  --------------#}" . PHP_EOL;
         $section .= "{% block logo %}" . PHP_EOL;

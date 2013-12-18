@@ -36,7 +36,7 @@ class AddLanguageSeoListener extends Base\AddLanguageBaseListener
      * Constructor
      *
      * @param \RedKiteLabs\RedKiteCmsBundle\Core\Content\Seo\AlSeoManager $seoManager
-     * @param \Symfony\Component\DependencyInjection\ContainerInterface     $container
+     * @param \Symfony\Component\DependencyInjection\ContainerInterface   $container
      *
      * @api
      */
@@ -48,7 +48,7 @@ class AddLanguageSeoListener extends Base\AddLanguageBaseListener
     }
 
     /**
-     *{ @inheritdoc }
+     *{@inheritdoc}
      */
     protected function setUpSourceObjects()
     {
@@ -58,7 +58,7 @@ class AddLanguageSeoListener extends Base\AddLanguageBaseListener
     }
 
     /**
-     * { @inheritdoc }
+     * {@inheritdoc}
      */
     protected function copy(array $values)
     {

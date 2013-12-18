@@ -18,8 +18,6 @@
 namespace RedKiteLabs\RedKiteCmsBundle\Core\PageTree;
 
 /**
- * {@inheritdoc}
- *
  * The AlPageTree object used when deploying the website
  *
  * @author RedKite Labs <webmaster@redkite-labs.com>
@@ -29,7 +27,7 @@ class AlPageTreeDeploy extends AlPageTree
     protected function mergeAppBlocksAssets($assetsCollection, $type, $assetType)
     {
         $blockTypes = $this->pageBlocks->getBlockTypes();
-            
+
         // When a block has examined, it is saved in this array to avoid parsing it again
         $appsAssets = array();
 
@@ -40,7 +38,7 @@ class AlPageTreeDeploy extends AlPageTree
                 continue;
             }
 
-            if ( ! in_array($className, $appsAssets)) {                    
+            if ( ! in_array($className, $appsAssets)) {
                 $parameterSchema = '%s.%s_%s';
                 $parameter = sprintf($parameterSchema, strtolower($className), $type, $assetType);
                 $this->addAssetsFromContainer($assetsCollection, $parameter);

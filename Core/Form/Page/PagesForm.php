@@ -49,7 +49,9 @@ class PagesForm extends BaseBlockType
     }
 
     /**
-     * {@inheritdoc}
+     * Builds the form
+     *
+     * @see FormTypeExtensionInterface::buildForm()
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
@@ -72,19 +74,23 @@ class PagesForm extends BaseBlockType
     }
 
     /**
-     * {@inheritdoc}
+     * Sets the default options for this type
+     *
+     * @param OptionsResolverInterface $resolver The resolver for the options
      */
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         parent::setDefaultOptions($resolver);
-        
+
         $resolver->setDefaults(array(
             'data_class' => 'RedKiteLabs\RedKiteCmsBundle\Core\Form\Page\Page',
         ));
     }
 
     /**
-     * {@inheritdoc}
+     * Returns the name of this type
+     *
+     * @return string The name of this type
      */
     public function getName()
     {

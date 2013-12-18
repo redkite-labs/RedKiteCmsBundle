@@ -26,14 +26,16 @@ use Symfony\Component\OptionsResolver\OptionsResolverInterface;
  * @author RedKite Labs <info@redkite-labs.com>
  */
 abstract class BaseBlockType extends AbstractType
-{ 
+{
     /**
-     * {@inheritdoc}
+     * Sets the default options for this type
+     *
+     * @param OptionsResolverInterface $resolver The resolver for the options
      */
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
-            'translation_domain' => 'RedKiteCmsBundle',  
+            'translation_domain' => 'RedKiteCmsBundle',
             'csrf_protection' => false,
         ));
     }

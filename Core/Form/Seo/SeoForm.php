@@ -45,7 +45,9 @@ class SeoForm extends BaseBlockType
     }
 
     /**
-     * {@inheritdoc}
+     * Builds the form
+     *
+     * @see FormTypeExtensionInterface::buildForm()
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
@@ -54,27 +56,27 @@ class SeoForm extends BaseBlockType
         $builder->add('permalink', 'textarea', array(
             'label' => 'pages_controller_label_permalink',
             'attr' => array(
-                'rows' => '3', 
+                'rows' => '3',
             ),));
         $builder->add('title', 'textarea', array(
             'label' => 'pages_controller_label_meta_title',
             'attr' => array(
                 'title' => 'pages_controller_meta_title_explanation',
-                'rows' => '3', 
+                'rows' => '3',
             ),
         ));
         $builder->add('description', 'textarea', array(
             'label' => 'pages_controller_label_meta_description',
             'attr' => array(
                 'title' => 'pages_controller_meta_description_explanation',
-                'rows' => '3', 
+                'rows' => '3',
             ),
         ));
         $builder->add('keywords', 'textarea', array(
             'label' => 'pages_controller_label_meta_keywords',
             'attr' => array(
                 'title' => 'pages_controller_meta_keywords_explanation',
-                'rows' => '2', 
+                'rows' => '2',
             ),
         ));
         $builder->add('sitemapChangeFreq', 'choice', array(
@@ -110,19 +112,23 @@ class SeoForm extends BaseBlockType
     }
 
     /**
-     * {@inheritdoc}
+     * Sets the default options for this type
+     *
+     * @param OptionsResolverInterface $resolver The resolver for the options
      */
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         parent::setDefaultOptions($resolver);
-        
+
         $resolver->setDefaults(array(
             'data_class' => 'RedKiteLabs\RedKiteCmsBundle\Core\Form\Seo\Seo',
         ));
     }
 
     /**
-     * {@inheritdoc}
+     * Returns the name of this type
+     *
+     * @return string The name of this type
      */
     public function getName()
     {

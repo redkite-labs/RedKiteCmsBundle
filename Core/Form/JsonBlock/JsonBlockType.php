@@ -27,15 +27,19 @@ use Symfony\Component\Form\FormBuilderInterface;
 abstract class JsonBlockType extends BaseBlockType
 {
     /**
-     * {@inheritdoc}
+     * Builds the form
+     *
+     * @see FormTypeExtensionInterface::buildForm()
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder->add('save', 'submit', array('label' => 'common_label_save', 'attr' => array('class' => 'al_editor_save btn btn-primary')));
     }
-    
+
     /**
-     * {@inheritdoc}
+     * Returns the name of this type
+     *
+     * @return string The name of this type
      */
     public function getName()
     {

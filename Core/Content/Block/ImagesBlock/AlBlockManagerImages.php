@@ -24,8 +24,15 @@ abstract class AlBlockManagerImages extends AlBlockManagerContainer
      */
     protected function edit(array $values)
     {
-        $values["Content"] = $this->arrangeImages($values);
-        
+        if (array_key_exists('AddFile', $values)) {
+            $values["content"] = $this->addImage($values);
+        }
+
+        if (array_key_exists('RemoveFile', $values)) {
+            $values["content"] = $this->removeImage($values);
+        }
+
+        //$values["Content"] = $this->arrangeImages($values);
         return $this->doBaseEdit($values);
     }
 
@@ -34,17 +41,61 @@ abstract class AlBlockManagerImages extends AlBlockManagerContainer
         return parent::edit($values);
     }
 
+    private function addImage($values)
+    {
+        $images = $this->decodeImages();
+        $savedImages = $this->fetchImagesBySrcAttribute($images);
+
+        $file = $values["AddFile"];
+        $imageFile = "/" . AlAssetsPath::getUploadFolder($this->container) . "/" . preg_replace('/http?:\/\/[^\/]+/', '', $file);
+
+        if (in_array($imageFile, $savedImages)) {
+            throw new RuntimeException('exception_file_already_added');
+        }
+
+        $images[]['image'] = $imageFile;
+
+        return json_encode($images);
+    }
+
+    private function removeImage($values)
+    {
+        $images = $this->decodeImages();
+        $savedImages = $this->fetchImagesBySrcAttribute($images);
+
+        $fileToRemove = $values["RemoveFile"];
+        $key = array_search($fileToRemove, $savedImages);
+        if (false !== $key) {
+            unset($images[$key]);
+        }
+
+        return json_encode($images);
+    }
+
+    private function decodeImages()
+    {
+        return AlBlockManagerJsonBlock::decodeJsonContent($this->alBlock);
+    }
+
+    private function fetchImagesBySrcAttribute($images)
+    {
+        $savedImages = array_map(function ($el) { return (array_key_exists('src', $el)) ? $el['src'] : ''; }, $images);
+
+        return $savedImages;
+    }
+
+    /*
     protected function arrangeImages(array $values)
     {
         if ( ! array_key_exists('Content', $values)) {
             $images = AlBlockManagerJsonBlock::decodeJsonContent($this->alBlock);
-            $savedImages = array_map(function($el){ return (array_key_exists('src', $el)) ? $el['src'] : ''; }, $images);
+            $savedImages = array_map(function ($el) { return (array_key_exists('src', $el)) ? $el['src'] : ''; }, $images);
 
             if (array_key_exists('AddFile', $values)) {
                 $file = $values["AddFile"];
-
                 $imageFile = "/" . AlAssetsPath::getUploadFolder($this->container) . "/" . preg_replace('/http?:\/\/[^\/]+/', '', $file);
-                if (in_array($imageFile, $savedImages)) {                    
+
+                if (in_array($imageFile, $savedImages)) {
                     throw new RuntimeException('exception_file_already_added');
                 }
 
@@ -63,5 +114,5 @@ abstract class AlBlockManagerImages extends AlBlockManagerContainer
         }
 
         return $values['Content'];
-    }
+    }*/
 }

@@ -92,16 +92,11 @@ abstract class AlBlockManager extends AlContentManagerBase implements AlContentM
     }
 
     /**
-     * Defines the default value of the managed block
+     * Defines the App-Block's default value
      *
-     * Returns an array which may contain one or more of these keys:
+     * Returns an array which contains the following key:
      *
      *   - *Content*                The html content displayed on the page
-     *   - *ExternalJavascript*     A comma separated external javascripts files
-     *   - *InternalJavascript*     A javascript code
-     *   - *ExternalStylesheet*     A comma separated external stylesheets files
-     *   - *InternalStylesheet*     A stylesheet code
-     *
      *
      * @return array
      */
@@ -201,7 +196,7 @@ abstract class AlBlockManager extends AlContentManagerBase implements AlContentM
     }
 
     /**
-     * Defines the parameters passed to the block's editor
+     * Defines the parameters passed to the App-Block's editor
      *
      * @return array
      *
@@ -315,7 +310,7 @@ abstract class AlBlockManager extends AlContentManagerBase implements AlContentM
      * @return boolean
      * @throws \RedKiteLabs\RedKiteCmsBundle\Core\Exception\Content\General\ArgumentIsEmptyException
      * @throws \RedKiteLabs\RedKiteCmsBundle\Core\Exception\Content\General\InvalidArgumentTypeException
-     * 
+     *
      * @api
      */
     public function delete()
@@ -323,7 +318,7 @@ abstract class AlBlockManager extends AlContentManagerBase implements AlContentM
         if (null === $this->alBlock) {
             throw new General\ArgumentIsEmptyException('exception_no_blocks_set_delete_skipped');
         }
-        
+
         $this->dispatchBeforeOperationEvent(
             '\RedKiteLabs\RedKiteCmsBundle\Core\Event\Content\Block\BeforeBlockDeletingEvent',
             BlockEvents::BEFORE_DELETE_BLOCK,
@@ -344,8 +339,8 @@ abstract class AlBlockManager extends AlContentManagerBase implements AlContentM
                      ->dispatch();
 
                 return true;
-            } 
-            
+            }
+
             $this->blockRepository->rollBack();
 
             return false;
@@ -386,7 +381,7 @@ abstract class AlBlockManager extends AlContentManagerBase implements AlContentM
 
         return $blockManager;
     }
-    
+
     /**
      * When true, attaches the internal javascript code to html when the editor is active
      *
@@ -402,7 +397,7 @@ abstract class AlBlockManager extends AlContentManagerBase implements AlContentM
     {
         throw new RedKiteDeprecatedException("AlBlockManager->getExecuteInternalJavascript has been deprecated. You can implement a new App Block to do the same things");
     }
-    
+
     /**
      * Returns the current saved ExternalJavascript value as array
      *
@@ -502,7 +497,7 @@ abstract class AlBlockManager extends AlContentManagerBase implements AlContentM
      * Implements a method to let the derived class override it to format the content
      * to display when the Cms is active
      *
-     * @return null
+     * @return string|null
      *
      * @api
      */
@@ -521,7 +516,7 @@ abstract class AlBlockManager extends AlContentManagerBase implements AlContentM
     }
 
     /**
-     * Default rendered view
+     * Renders the App-Block's content view
      *
      * This method must be overriden to display an elaborated version of the content
      * saved for the current Block
@@ -541,11 +536,11 @@ abstract class AlBlockManager extends AlContentManagerBase implements AlContentM
     /**
      * Adds a new block to the AlBlock table
      *
-     * @param  array                                                                                                $values An array where keys are the AlBlockField definition and values are the values to add
+     * @param  array                                                                                             $values An array where keys are the AlBlockField definition and values are the values to add
      * @return boolean
      * @throws \RedKiteLabs\RedKiteCmsBundle\Core\Exception\Content\General\General\InvalidArgumentTypeException
      * @throws \RedKiteLabs\RedKiteCmsBundle\Core\Exception\Content\General\InvalidArgumentTypeException
-     * 
+     *
      * @api
      */
     protected function add(array $values)
@@ -604,12 +599,12 @@ abstract class AlBlockManager extends AlContentManagerBase implements AlContentM
                 $this->eventsHandler
                      ->createEvent(BlockEvents::AFTER_ADD_BLOCK, '\RedKiteLabs\RedKiteCmsBundle\Core\Event\Content\Block\AfterBlockAddedEvent', array($this))
                      ->dispatch();
-                     
+
                 return $result;
-            } 
-            
+            }
+
             $this->blockRepository->rollBack();
-            
+
             return $result;
         } catch (\Exception $e) {
             if (isset($this->blockRepository) && $this->blockRepository !== null) {
@@ -623,10 +618,10 @@ abstract class AlBlockManager extends AlContentManagerBase implements AlContentM
     /**
      * Edits the current block object
      *
-     * @param  array                                                                                        $values An array where keys are the AlBlockField definition and values are the values to edit
+     * @param  array                                                                                     $values An array where keys are the AlBlockField definition and values are the values to edit
      * @return boolean
      * @throws \RedKiteLabs\RedKiteCmsBundle\Core\Exception\Content\General\InvalidArgumentTypeException
-     * 
+     *
      * @api
      */
     protected function edit(array $values)
@@ -652,10 +647,10 @@ abstract class AlBlockManager extends AlContentManagerBase implements AlContentM
                 $this->eventsHandler
                      ->createEvent(BlockEvents::AFTER_EDIT_BLOCK, '\RedKiteLabs\RedKiteCmsBundle\Core\Event\Content\Block\AfterBlockEditedEvent', array($this))
                      ->dispatch();
-                     
+
                 return $result;
-            } 
-            
+            }
+
             $this->blockRepository->rollBack();
 
             return $result;
