@@ -1,4 +1,4 @@
-RedKite CMS 1.1.0
+RedKite CMS 1.1.0 (2014/01/18)
 f22eacd login errors were displayed in a wrong position: fixed
 31bec90 cleaned the page attributes form after a page is edited
 802fc72 added the fromLanguageAndPageNames method to fetch a SEO object from language and page names
