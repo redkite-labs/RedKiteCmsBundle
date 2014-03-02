@@ -41,7 +41,7 @@
     "redkite-cms/redkite-cms-base-blocks": "1.1.*",
     "redkite-cms/tinymce-block-bundle": "1.1.*",
     "redkite-labs/bootbusiness-theme-bundle": "1.1.*",
-    "redkite-labs/sunshine-theme-bundle": "dev-master",
+    "redkite-labs/modern-business-theme-bundle": "1.1.*",
     "willdurand/propel-typehintable-behavior": "dev-master",  
     "mikey179/vfsStream": "1.1.0"
   },

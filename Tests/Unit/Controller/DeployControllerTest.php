@@ -203,6 +203,13 @@ class DeployControllerTest extends TestCase
         $at++;
         $this->container->expects($this->at($at))
             ->method('getParameter')
+            ->with('red_kite_labs_theme_engine.web_path')
+            ->will($this->returnValue(""))
+        ;
+        
+        $at++;
+        $this->container->expects($this->at($at))
+            ->method('getParameter')
             ->with('red_kite_cms.deploy_bundle.config_dir')
         ;
         
@@ -249,13 +256,7 @@ class DeployControllerTest extends TestCase
             ->method('getParameter')
             ->with('red_kite_cms.website_url')
         ;
-        
-        $at++;
-        $this->container->expects($this->at($at))
-            ->method('getParameter')
-            ->with('red_kite_cms.enable_yui_compressor')
-        ;
-        
+
         $at++;
         $this->container->expects($this->at($at))
             ->method('getParameter')

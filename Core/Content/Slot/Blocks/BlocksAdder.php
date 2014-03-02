@@ -32,15 +32,18 @@ use RedKiteLabs\RedKiteCmsBundle\Core\Content\Block\AlBlockManagerInterface;
  */
 class BlocksAdder extends BaseBlocks
 {
-    private $lastAdded = null;
-    private $lastEdited = null;
+    /** @var AlBlockManagerFactoryInterface */
     private $blockManagerFactory;
+    /** @var null|AlBlockManagerInterface */
+    private $lastAdded = null;
+    /** @var null|AlBlockManagerInterface */
+    private $lastEdited = null;
 
     /**
      * Constructor
      *
-     * @param \RedKiteLabs\RedKiteCmsBundle\Core\Repository\Repository\BlockRepositoryInterface $blockRepository
-     * @param \RedKiteLabs\RedKiteCmsBundle\Core\Content\Block\AlBlockManagerFactoryInterface   $blockManagerFactory
+     * @param BlockRepositoryInterface       $blockRepository
+     * @param AlBlockManagerFactoryInterface $blockManagerFactory
      */
     public function __construct(BlockRepositoryInterface $blockRepository, AlBlockManagerFactoryInterface $blockManagerFactory)
     {
@@ -52,7 +55,7 @@ class BlocksAdder extends BaseBlocks
     /**
      * Returns the last block manager added to the slot manager
      *
-     * @return AlBlockManager object or null
+     * @return AlBlockManagerInterface object or null
      *
      * @api
      */
@@ -64,7 +67,7 @@ class BlocksAdder extends BaseBlocks
     /**
      * Returns the last edited block manager
      *
-     * @return AlBlockManager object or null
+     * @return AlBlockManagerInterface object or null
      *
      * @api
      */
@@ -79,11 +82,11 @@ class BlocksAdder extends BaseBlocks
      * The created block managed is added to the collection. When the $referenceBlockId param is valorized,
      * the new block is created under the block identified by the given id
      *
-     * @param  \RedKiteLabs\ThemeEngineBundle\Core\ThemeSlots\AlSlot                          $slot
-     * @param  \RedKiteLabs\RedKiteCmsBundle\Core\Content\Slot\Blocks\BlockManagersCollection $blockManagersCollection
-     * @param  array                                                                          $options
+     * @param  AlSlot                  $slot
+     * @param  BlockManagersCollection $blockManagersCollection
+     * @param  array                   $options
      * @return boolean|null
-     * @throws \RedKiteLabs\RedKiteCmsBundle\Core\Exception\General\InvalidArgumentException
+     * @throws \Exception
      */
     public function add(AlSlot $slot, BlockManagersCollection $blockManagersCollection, array $options)
     {
@@ -93,7 +96,7 @@ class BlocksAdder extends BaseBlocks
 
             // Make sure that a content repeated at site level is never added twice
             if ($options["skipSiteLevelBlocks"] && $repeated == 'site' && count($this->blockRepository->retrieveContents(1, 1, $slot->getSlotName())) > 0) {
-                return;
+                return null;
             }
 
             $this->blockRepository->startTransaction();
@@ -133,10 +136,10 @@ class BlocksAdder extends BaseBlocks
     /**
      * Edits the block
      *
-     * @param  \RedKiteLabs\RedKiteCmsBundle\Core\Content\Block\AlBlockManagerInterface      $blockManager
-     * @param  array                                                                         $values
+     * @param  AlBlockManagerInterface $blockManager
+     * @param  array                   $values
      * @return boolean|null
-     * @throws \RedKiteLabs\RedKiteCmsBundle\Core\Exception\General\InvalidArgumentException
+     * @throws \Exception
      *
      * @api
      */
@@ -178,6 +181,11 @@ class BlocksAdder extends BaseBlocks
         return $options;
     }
 
+    /**
+     * @param $type
+     * @return AlBlockManagerInterface
+     * @throws InvalidArgumentException
+     */
     private function createBlockManager($type)
     {
         $blockManager = $this->blockManagerFactory->createBlockManager($type);
@@ -197,7 +205,7 @@ class BlocksAdder extends BaseBlocks
         return $blockManager;
     }
 
-    private function saveBlockmanager(AlSlot $slot, $blockManager, array $options)
+    private function saveBlockmanager(AlSlot $slot, AlBlockManagerInterface $blockManager, array $options)
     {
         $values = array(
             "PageId"          => $options["idPage"],
@@ -205,10 +213,15 @@ class BlocksAdder extends BaseBlocks
             "SlotName"        => $slot->getSlotName(),
             "Type"            => $options["type"],
             "ContentPosition" => $options["position"],
-            //"CreatedAt"       => date("Y-m-d H:i:s"),
         );
 
         if ($options["forceSlotAttributes"]) {
+
+            $blockDefinition = $slot->getBlockDefinition();
+            if (null !== $blockDefinition) {
+                 return $this->generateFromBlockDefinition($blockDefinition, $blockManager, $values);
+            }
+
             $content = $slot->getContent();
             if (null !== $content) {
                 $values["Content"] = $content;
@@ -218,5 +231,53 @@ class BlocksAdder extends BaseBlocks
         $blockManager->set(null);
 
         return $blockManager->save($values);
+    }
+
+    public function generateFromBlockDefinition($blockDefinition, AlBlockManagerInterface $blockManager, array $values)
+    {
+        $default = $blockManager->getDefaultValue();
+        $blockDefinitionDecoded = json_decode($blockDefinition, true);
+
+        $nextItems = null;
+        if (array_key_exists("items", $blockDefinitionDecoded)) {
+            $nextItems = $blockDefinitionDecoded["items"];
+            $items = array();
+            foreach ($nextItems as $nextItem) {
+                $items[] = array_intersect_key($nextItem, array('blockType' => ''));
+            }
+            $blockDefinitionDecoded["items"] = $items;
+        }
+
+        if (array_key_exists("blockType", $blockDefinitionDecoded)) {
+            unset($blockDefinitionDecoded["blockType"]);
+        }
+
+        $defaultValue = json_decode($default["Content"], true);
+        if ( ! is_array($defaultValue)) {
+            return true;
+        }
+        $values["Content"] = json_encode(array_replace_recursive($defaultValue, $blockDefinitionDecoded));
+
+        $blockManager->set(null);
+        if ( ! $blockManager->save($values)) {
+            return false;
+        }
+
+        if (null !== $nextItems) {
+            $i = 0;
+            $blockId = $blockManager->get()->getId();
+            foreach ($nextItems as $nextItem) {
+                $values["SlotName"] = $blockId . '-' . $i;
+                $values["Type"] = $nextItem["blockType"];
+                $blockManager = $this->blockManagerFactory->createBlockManager($nextItem["blockType"]);
+                if ( ! $this->generateFromBlockDefinition(json_encode($nextItem), $blockManager, $values)) {
+                    return false;
+                }
+
+                $i++;
+            }
+        }
+
+        return true;
     }
 }

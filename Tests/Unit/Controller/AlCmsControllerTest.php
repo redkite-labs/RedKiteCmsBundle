@@ -113,33 +113,38 @@ class AlCmsControllerTest extends TestCase
             ->with('language')
         ;
         
-        $this->container->expects($this->at(9))
+        $at = 7;
+        $this->container->expects($this->at($at))
             ->method('get')
             ->with('red_kite_cms.configuration')
             ->will($this->returnValue($configuration));
+        $at++;
         
-        $this->container->expects($this->at(10))
+        $this->container->expects($this->at($at))
             ->method('get')
             ->with('translator')
             ->will($this->returnValue($translator));
+        $at++;
         
-        $this->container->expects($this->at(11))
+        $this->container->expects($this->at($at))
             ->method('get')
             ->with('session')
             ->will($this->returnValue($session));
+        $at++;
         
-        $this->container->expects($this->at(12))
+        $this->container->expects($this->at($at))
             ->method('get')
             ->with('templating')
             ->will($this->returnValue($this->templating));
+        $at++;
         
         $dispatcher = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
-        $this->container->expects($this->at(13))
+        $this->container->expects($this->at($at))
             ->method('get')
             ->with('event_dispatcher')
             ->will($this->returnValue($dispatcher));
         
-        $this->controller->showAction();        
+        $this->controller->showAction($this->request);
     }
     
     public function testAFlashMessageIsSetWhenTemplateDoesNotExist()
@@ -190,8 +195,6 @@ class AlCmsControllerTest extends TestCase
             ->will($this->returnValue($flashBag))
         ;
         
-        
-        
         $blockManagerFactory = $this->getMockBuilder('RedKiteLabs\RedKiteCmsBundle\Core\Content\Block\AlBlockManagerFactory')
                  ->disableOriginalConstructor()
                  ->getMock()
@@ -216,37 +219,48 @@ class AlCmsControllerTest extends TestCase
             ->with('language')
         ;
         
-        $this->container->expects($this->at(9))
+        $at = 7;
+        $this->container->expects($this->at($at))
             ->method('get')
             ->with('red_kite_cms.configuration')
-            ->will($this->returnValue($configuration));
+            ->will($this->returnValue($configuration))
+        ;
+        $at++;
         
-        $this->container->expects($this->at(10))
+        $this->container->expects($this->at($at))
             ->method('get')
             ->with('translator')
             ->will($this->returnValue($translator))
         ;
+        $at++;
         
-        $this->container->expects($this->at(11))
+        $this->container->expects($this->at($at))
             ->method('get')
             ->with('session')
-            ->will($this->returnValue($session));
+            ->will($this->returnValue($session))
+        ;
+        $at += 2;
         
-        $this->container->expects($this->at(13))
+        $this->container->expects($this->at($at))
             ->method('get')
             ->with('red_kite_cms.block_manager_factory')
-            ->will($this->returnValue($blockManagerFactory));
+            ->will($this->returnValue($blockManagerFactory))
+        ;
+        $at++;
                 
-        $this->container->expects($this->at(14))
+        $this->container->expects($this->at($at))
             ->method('get')
             ->with('templating')
-            ->will($this->returnValue($this->templating));
+            ->will($this->returnValue($this->templating))
+        ;
+        $at++;
         
         $dispatcher = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
-        $this->container->expects($this->at(15))
+        $this->container->expects($this->at($at))
             ->method('get')
             ->with('event_dispatcher')
-            ->will($this->returnValue($dispatcher));
+            ->will($this->returnValue($dispatcher))
+        ;
         
         $this->languageRepository->expects($this->once())
             ->method('activeLanguages')
@@ -256,32 +270,27 @@ class AlCmsControllerTest extends TestCase
             ->method('activePages')
             ->will($this->returnValue(array()));
         
-        $this->controller->showAction();        
+        $this->controller->showAction($this->request);
     }
 
     private function initContainer($pageTree)
     {
         $this->container->expects($this->at(0))
             ->method('get')
-            ->with('request')
-            ->will($this->returnValue($this->request));
-        
-        $this->container->expects($this->at(1))
-            ->method('get')
             ->with('kernel')
             ->will($this->returnValue($this->kernel));
         
-        $this->container->expects($this->at(2))
+        $this->container->expects($this->at(1))
             ->method('get')
             ->with('red_kite_cms.page_tree')
             ->will($this->returnValue($pageTree));
 
-        $this->container->expects($this->at(3))
+        $this->container->expects($this->at(2))
             ->method('get')
             ->with('security.context')
             ->will($this->returnValue($this->securityContext));
         
-        $this->container->expects($this->at(4))
+        $this->container->expects($this->at(3))
             ->method('get')
             ->with('red_kite_cms.factory_repository')
             ->will($this->returnValue($this->factoryRepository));
@@ -290,7 +299,8 @@ class AlCmsControllerTest extends TestCase
         $activeTheme->expects($this->once())
             ->method('getThemeBootstrapVersion')
             ->will($this->returnValue('2.x'));
-        $this->container->expects($this->at(5))
+        
+        $this->container->expects($this->at(4))
             ->method('get')
             ->with('red_kite_cms.active_theme')
             ->will($this->returnValue($activeTheme));

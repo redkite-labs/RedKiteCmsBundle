@@ -25,7 +25,6 @@
  */
 namespace RedKiteLabs\RedKiteCmsBundle\Core\Content\Block;
 
-use RedKiteLabs\RedKiteCmsBundle\Core\Content\Block\AlBlockManagerFactoryInterface;
 use RedKiteLabs\RedKiteCmsBundle\Model\AlBlock;
 use RedKiteLabs\RedKiteCmsBundle\Core\Repository\Factory\AlFactoryRepositoryInterface;
 use RedKiteLabs\RedKiteCmsBundle\Core\EventsHandler\AlEventsHandlerInterface;
@@ -150,6 +149,7 @@ class AlBlockManagerFactory implements AlBlockManagerFactoryInterface
      */
     public function getBlocks()
     {
+        $ungroupedKey = 'Ungrouped';
         $blockGroups = array();
         foreach ($this->blockManagersItems as $blockManagerItem) {
 
@@ -157,11 +157,13 @@ class AlBlockManagerFactory implements AlBlockManagerFactoryInterface
                 continue;
             }
 
+            $groups = array($ungroupedKey);
             $group = $blockManagerItem->getGroup();
             if ($group != "") {
                 $groups = explode(",", $group);
-            } else {
-                $groups = array('none');
+                if ($group != "redkitecms_internals" && count($groups) == 1) {
+                    $groups = array($ungroupedKey);
+                }
             }
 
             $blockGroup = array($blockManagerItem->getType() => array('description' => $blockManagerItem->getDescription(), 'filter' => $blockManagerItem->getFilter()));
@@ -174,7 +176,7 @@ class AlBlockManagerFactory implements AlBlockManagerFactoryInterface
         // First displayed group
         $redKiteBlocks = array("Default" => $this->extractGroup('redkitecms_internals', $blockGroups));
         // Last displayed group
-        $notGrouped = $this->extractGroup('none', $blockGroups);
+        $notGrouped = $this->extractGroup($ungroupedKey, $blockGroups);
         // Sorts
         $this->recurKsort($redKiteBlocks);
         if (count($notGrouped) > 0) {
@@ -190,7 +192,9 @@ class AlBlockManagerFactory implements AlBlockManagerFactoryInterface
 
         // Merges blocks
         $blocks = array_merge($redKiteBlocks, $blocks);
-        $blocks = array_merge($blocks, $notGrouped);
+        if ( ! empty($notGrouped)) {
+            $blocks = array_merge($blocks, array($ungroupedKey => $notGrouped));
+        }
 
         return $blocks;
     }

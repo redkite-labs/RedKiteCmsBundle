@@ -18,6 +18,7 @@
 namespace RedKiteLabs\RedKiteCmsBundle\Controller;
 
 use RedKiteLabs\RedKiteCmsBundle\Core\Form\ModelChoiceValues\ChoiceValues;
+use RedKiteLabs\RedKiteCmsBundle\Core\PageTree\AlPageTree;
 use RedKiteLabs\ThemeEngineBundle\Core\Rendering\Controller\BaseFrontendController;
 use RedKiteLabs\ThemeEngineBundle\Core\Asset\AlAsset;
 use Symfony\Component\HttpFoundation\Request;
@@ -29,15 +30,21 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class AlCmsController extends BaseFrontendController
 {
+    /** @var null|\Symfony\Component\HttpKernel\KernelInterface */
     protected $kernel = null;
+    /** @var null|\RedKiteLabs\RedKiteCmsBundle\Core\Repository\Factory\AlFactoryRepositoryInterface */
     protected $factoryRepository = null;
+    /** @var null|\RedKiteLabs\RedKiteCmsBundle\Core\Repository\Repository\PageRepositoryInterface */
     protected $pageRepository = null;
+    /** @var null|\RedKiteLabs\RedKiteCmsBundle\Core\Repository\Repository\LanguageRepositoryInterface */
     protected $languageRepository = null;
+    /** @var null|\RedKiteLabs\RedKiteCmsBundle\Core\Repository\Repository\SeoRepositoryInterface */
+    protected $seoRepository = null;
+    /** @var null|\RedKiteLabs\RedKiteCmsBundle\Core\Configuration\AlConfigurationInterface */
     protected $configuration = null;
 
-    public function showAction()
+    public function showAction(Request $request)
     {
-        $request = $this->container->get('request');
         $this->kernel = $this->container->get('kernel');
         $pageTree = $this->container->get('red_kite_cms.page_tree');
         $isSecure = (null !== $this->get('security.context')->getToken()) ? true : false;
@@ -49,7 +56,6 @@ class AlCmsController extends BaseFrontendController
 
         $params = array(
             'template' => 'RedKiteCmsBundle:Cms:Welcome/welcome.html.twig',
-            'enable_yui_compressor' => $this->container->getParameter('red_kite_cms.enable_yui_compressor'),
             'templateStylesheets' => null,
             'templateJavascripts' => null,
             'available_blocks' => null,
@@ -82,23 +88,23 @@ class AlCmsController extends BaseFrontendController
 
             $template = $this->findTemplate($pageTree);
             $params = array_merge($params, array(
-                'metatitle' => $pageTree->getMetaTitle(),
-                'metadescription' => $pageTree->getMetaDescription(),
-                'metakeywords' => $pageTree->getMetaKeywords(),
-                'internal_stylesheets' => $pageTree->getInternalStylesheets(),
-                'internal_javascripts' => $pageTree->getInternalJavascripts(),
-                'template' => $template,
-                'pages' => ChoiceValues::getPages($this->pageRepository),
-                'languages' => ChoiceValues::getLanguages($this->languageRepository),
-                'permalinks' => ChoiceValues::getPermalinks($this->seoRepository, $languageId),
-                'page' => $pageId,
-                'language' => $languageId,
-                'page_name' => $pageName,
-                'language_name' => $languageName,
-                'base_template' => $this->container->getParameter('red_kite_labs_theme_engine.base_template'),
-                'templateStylesheets' => $pageTree->getExternalStylesheets(),
-                'templateJavascripts' => $this->fixAssets($pageTree->getExternalJavascripts()),
-                'available_blocks' => $this->container->get('red_kite_cms.block_manager_factory')->getBlocks(),
+                    'metatitle' => $pageTree->getMetaTitle(),
+                    'metadescription' => $pageTree->getMetaDescription(),
+                    'metakeywords' => $pageTree->getMetaKeywords(),
+                    'internal_stylesheets' => $pageTree->getInternalStylesheets(),
+                    'internal_javascripts' => $pageTree->getInternalJavascripts(),
+                    'template' => $template,
+                    'pages' => ChoiceValues::getPages($this->pageRepository),
+                    'languages' => ChoiceValues::getLanguages($this->languageRepository),
+                    'permalinks' => ChoiceValues::getPermalinks($this->seoRepository, $languageId),
+                    'page' => $pageId,
+                    'language' => $languageId,
+                    'page_name' => $pageName,
+                    'language_name' => $languageName,
+                    'base_template' => $this->container->getParameter('red_kite_labs_theme_engine.base_template'),
+                    'templateStylesheets' => $pageTree->getExternalStylesheets(),
+                    'templateJavascripts' => $this->fixAssets($pageTree->getExternalJavascripts()),
+                    'available_blocks' => $this->container->get('red_kite_cms.block_manager_factory')->getBlocks(),
                 )
             );
         } else {
@@ -125,7 +131,7 @@ class AlCmsController extends BaseFrontendController
      * Overrides the base method to replace the permalink when it is used instad
      * of the page name
      *
-     * @param type $request
+     * @param Request $request
      */
     protected function dispatchCurrentPageEvent(Request $request)
     {
@@ -140,7 +146,7 @@ class AlCmsController extends BaseFrontendController
         $this->dispatcher->dispatch($eventName, $this->event);
     }
 
-    protected function findTemplate($pageTree)
+    protected function findTemplate(AlPageTree $pageTree)
     {
         $templateTwig = 'RedKiteCmsBundle:Cms:Welcome/welcome.html.twig';
         if (null !== $template = $pageTree->getTemplate()) {
